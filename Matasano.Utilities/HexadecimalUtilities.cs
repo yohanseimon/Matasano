@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Matasano.Utilities
@@ -8,7 +8,15 @@ namespace Matasano.Utilities
     {
         public byte[] HexadecimalStringToByteArray(string hexadecimalString)
         {
-            return Enumerable.Range(0, hexadecimalString.Length).Where(h => h % 2 == 0).Select(h => Convert.ToByte(hexadecimalString.Substring(h, 2), 16)).ToArray();
+            List<byte> resultByteArray = new List<byte>();
+
+            for (int i = 0; i < hexadecimalString.Length; i++)
+            {
+                if (i % 2 == 0)
+                    resultByteArray.Add(Convert.ToByte(hexadecimalString.Substring(i, 2), 16));
+            }
+
+            return resultByteArray.ToArray();
         }
 
         public string ByteArrayToHexadecimalString(byte[] byteArray)
@@ -19,6 +27,18 @@ namespace Matasano.Utilities
                 stringBuilder.Append(b.ToString("x2"));
 
             return stringBuilder.ToString();
+        }
+
+        public byte[] XorByteArrayByKey(byte[] byteArray, byte key)
+        {
+            List<byte> resultByteArray = new List<byte>(byteArray.Length);
+
+            foreach (byte b in byteArray)
+            {
+                resultByteArray.Add((byte)(b ^ key));
+            }
+
+            return resultByteArray.ToArray();
         }
     }
 }

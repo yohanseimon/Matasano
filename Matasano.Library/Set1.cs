@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using Matasano.Utilities;
 
 namespace Matasano.Library
@@ -35,6 +36,7 @@ namespace Matasano.Library
 
         /*
          * Fixed XOR
+         * 
          * Write a function that takes two equal-length buffers and produces their XOR combination.
          * 
          * If your function works properly, then when you feed it the string:
@@ -59,6 +61,48 @@ namespace Matasano.Library
                 resultArray[i] = (byte)(firstByteArray[i] ^ secondByteArray[i]);
 
             return _hexadecimalUtilities.ByteArrayToHexadecimalString(resultArray);
+        }
+
+        /*
+         * Single-byte XOR cipher
+         * 
+         * The hex encoded string:
+         * 1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736
+         * ... has been XOR'd against a single character. Find the key, decrypt the message.
+         * 
+         * You can do this by hand. But don't: write code to do it for you.
+         * How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score.
+         * 
+         * Achievement Unlocked
+         * You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
+         * 
+         */
+        public string XorCipher(string hexadecimalString)
+        {
+            byte[] decipheredByteArray;
+            string decipheredByteString;
+
+            double score = 0;
+            double highestScore = 0;
+            string highestScoringString = String.Empty;
+
+            StringScorer stringScorer = new StringScorer();
+
+            for (int i = 0; i < 256; i++)
+            {
+                decipheredByteArray = _hexadecimalUtilities.XorByteArrayByKey(_hexadecimalUtilities.HexadecimalStringToByteArray(hexadecimalString), (byte)i);
+                decipheredByteString = Encoding.ASCII.GetString(decipheredByteArray);
+
+                score = stringScorer.ScoreStringByLetter(decipheredByteString);
+
+                if (score > highestScore)
+                {
+                    highestScore = score;
+                    highestScoringString = decipheredByteString;
+                }
+            }
+
+            return highestScoringString;
         }
     }
 }
