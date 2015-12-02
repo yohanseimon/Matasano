@@ -40,5 +40,21 @@ namespace Matasano.Utilities
 
             return resultByteArray.ToArray();
         }
+
+        public string XorByteArrayByRepeatingKey(byte[] byteArray, byte[] key)
+        {
+            int i = 0;
+            List<byte> resultByteArray = new List<byte>(byteArray.Length);
+
+            foreach (byte b in byteArray)
+            {                
+                resultByteArray.Add((byte)(b ^ key[i++]));
+
+                if (i == key.Length)
+                    i = 0;
+            }
+
+            return ByteArrayToHexadecimalString(resultByteArray.ToArray());
+        }
     }
 }
