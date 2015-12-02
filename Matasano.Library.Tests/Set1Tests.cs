@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Matasano.Library.Tests
 {
@@ -33,6 +37,16 @@ namespace Matasano.Library.Tests
             string xorCipherString = set.XorCipher("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
 
             Assert.AreEqual("Cooking MC's like a pound of bacon", xorCipherString, false);
+        }
+
+        [TestMethod]
+        public void Challenge04()
+        {
+            Set1 set = new Set1();
+
+            string xorCipherString = set.XorCipher(File.ReadLines("04.txt").Cast<string>().ToArray());
+
+            Assert.AreEqual("Now that the party is jumping\n", xorCipherString, false);
         }
     }
 }

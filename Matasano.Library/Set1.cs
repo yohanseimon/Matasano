@@ -104,5 +104,30 @@ namespace Matasano.Library
 
             return highestScoringString;
         }
+
+        public string XorCipher(string[] hexadecimalStringArray)
+        {
+            double score = 0;            
+            double highestScore = 0;
+
+            string decipheredString = String.Empty;
+            string highestScoringString = String.Empty;
+
+            StringScorer stringScorer = new StringScorer();
+
+            foreach (string hexadecimalString in hexadecimalStringArray)
+            {
+                decipheredString = XorCipher(hexadecimalString);
+                score = stringScorer.ScoreStringByLetter(decipheredString);
+
+                if (score > highestScore)
+                {
+                    highestScore = score;
+                    highestScoringString = decipheredString;
+                }
+            }
+
+            return highestScoringString;
+        }
     }
 }
