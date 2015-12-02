@@ -10,10 +10,9 @@ namespace Matasano.Utilities
         {
             List<byte> resultByteArray = new List<byte>();
 
-            for (int i = 0; i < hexadecimalString.Length; i++)
+            for (int i = 0; i < hexadecimalString.Length; i += 2)
             {
-                if (i % 2 == 0)
-                    resultByteArray.Add(Convert.ToByte(hexadecimalString.Substring(i, 2), 16));
+                resultByteArray.Add(Convert.ToByte(hexadecimalString.Substring(i, 2), 16));
             }
 
             return resultByteArray.ToArray();
