@@ -40,7 +40,7 @@ namespace Matasano.Utilities
             return resultByteArray.ToArray();
         }
 
-        public string XorByteArrayByRepeatingKey(byte[] byteArray, byte[] key)
+        public byte[] XorByteArrayByRepeatingKey(byte[] byteArray, byte[] key)
         {
             int i = 0;
             List<byte> resultByteArray = new List<byte>(byteArray.Length);
@@ -53,7 +53,7 @@ namespace Matasano.Utilities
                     i = 0;
             }
 
-            return ByteArrayToHexadecimalString(resultByteArray.ToArray());
+            return resultByteArray.ToArray();
         }
     }
 }

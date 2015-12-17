@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="UtilitiesTests.cs" />
     <Compile Include="Set1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,9 +59,18 @@
       <Project>{1dff97ae-6884-47c5-8904-d0328f3f4497}</Project>
       <Name>Matasano.Library</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Matasano.Utilities\Matasano.Utilities.csproj">
+      <Project>{55f7c8a8-6982-4d12-902e-31f96efc20f1}</Project>
+      <Name>Matasano.Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="04.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="06.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Matasano.Utilities;
@@ -7,10 +9,12 @@ namespace Matasano.Library
 {
     public class Set1
     {
+        StringUtilities _stringUtilities;
         HexadecimalUtilities _hexadecimalUtilities;
 
         public Set1()
         {
+            _stringUtilities = new StringUtilities();
             _hexadecimalUtilities = new HexadecimalUtilities();
         }
 
@@ -86,14 +90,12 @@ namespace Matasano.Library
             double highestScore = 0;
             string highestScoringString = String.Empty;
 
-            StringScorer stringScorer = new StringScorer();
-
             for (int i = 0; i < 256; i++)
             {
                 decipheredByteArray = _hexadecimalUtilities.XorByteArrayByKey(_hexadecimalUtilities.HexadecimalStringToByteArray(hexadecimalString), (byte)i);
                 decipheredByteString = Encoding.ASCII.GetString(decipheredByteArray);
 
-                score = stringScorer.ScoreStringByLetter(decipheredByteString);
+                score = _stringUtilities.ScoreStringByLetter(decipheredByteString);
 
                 if (score > highestScore)
                 {
@@ -115,13 +117,13 @@ namespace Matasano.Library
          */
         public string XorCipher(string[] hexadecimalStringArray)
         {
-            double score = 0;            
+            double score = 0;
             double highestScore = 0;
 
             string decipheredString = String.Empty;
             string highestScoringString = String.Empty;
 
-            StringScorer stringScorer = new StringScorer();
+            StringUtilities stringScorer = new StringUtilities();
 
             foreach (string hexadecimalString in hexadecimalStringArray)
             {
@@ -161,7 +163,95 @@ namespace Matasano.Library
             var bytes = Encoding.ASCII.GetBytes(stringToEncrypt);
             var keyBytes = Encoding.ASCII.GetBytes(key);
 
-            return _hexadecimalUtilities.XorByteArrayByRepeatingKey(bytes, keyBytes);
+            return _hexadecimalUtilities.ByteArrayToHexadecimalString(_hexadecimalUtilities.XorByteArrayByRepeatingKey(bytes, keyBytes));
+        }
+
+        /*
+         * Break repeating-key XOR
+         * It is officially on, now.
+         * This challenge isn't conceptually hard, but it involves actual error-prone coding. The other challenges in this set are there to bring you up to speed. This one is there to qualify you. If you can do this one, you're probably just fine up to Set 6.
+         * 
+         * There's a file here. It's been base64'd after being encrypted with repeating-key XOR.
+         * Decrypt it.
+         * 
+         * Here's how:
+         * 1. Let KEYSIZE be the guessed length of the key; try values from 2 to (say) 40.
+         * 2. Write a function to compute the edit distance/Hamming distance between two strings. The Hamming distance is just the number of differing bits. The distance between:
+         * 'this is a test' and 'wokka wokka!!!' is 37. Make sure your code agrees before you proceed.
+         * 3. For each KEYSIZE, take the first KEYSIZE worth of bytes, and the second KEYSIZE worth of bytes, and find the edit distance between them. Normalize this result by dividing by KEYSIZE.
+         * 4. The KEYSIZE with the smallest normalized edit distance is probably the key. You could proceed perhaps with the smallest 2-3 KEYSIZE values. Or take 4 KEYSIZE blocks instead of 2 and average the distances.
+         * 5. Now that you probably know the KEYSIZE: break the ciphertext into blocks of KEYSIZE length.
+         * 6. Now transpose the blocks: make a block that is the first byte of every block, and a block that is the second byte of every block, and so on.
+         * 7. Solve each block as if it was single-character XOR. You already have code to do this.
+         * 8. For each block, the single-byte XOR key that produces the best looking histogram is the repeating-key XOR key byte for that block. Put them together and you have the key.
+         * 
+         * This code is going to turn out to be surprisingly useful later on. Breaking repeating-key XOR ("Vigenere") statistically is obviously an academic exercise, a "Crypto 101" thing. But more people "know how" to break it than can actually break it, and a similar technique breaks something much more important.
+         * 
+         * No, that's not a mistake.
+         * We get more tech support questions for this challenge than any of the other ones. We promise, there aren't any blatant errors in this text. In particular: the "wokka wokka!!!" edit distance really is 37.
+         * 
+         */
+        public string BreakRepeatingKeyXor(string stringToDecrypt)
+        {
+            var encryptedByteArray = Convert.FromBase64String(stringToDecrypt);
+
+            Dictionary<int, float> hammingDistanceDictionary = new Dictionary<int, float>();
+
+            for (int i = 2; i <= 40; i++)
+            {
+                hammingDistanceDictionary.Add(i, (float)(_stringUtilities.GetHammingDistance(encryptedByteArray.Take(i).ToArray(), encryptedByteArray.Skip(i).Take(i).ToArray()) +
+                    _stringUtilities.GetHammingDistance(encryptedByteArray.Skip(i * 2).Take(i).ToArray(), encryptedByteArray.Skip(i * 3).Take(i).ToArray())) / i);
+            }
+
+            foreach (int key in hammingDistanceDictionary.OrderBy(h => h.Value).Select(h => h.Key))
+            {                
+                int highestScoreKey;
+                double score, highestScore;
+
+                List<byte> byteBlock;
+                byte[] possibleKey = new byte[key];
+
+                for (int keyIndex = 0; keyIndex < key; keyIndex++)
+                {
+                    score = 0;
+                    highestScore = 0;
+                    highestScoreKey = -1;
+                    byteBlock = new List<byte>();
+
+                    for (int i = 0; i < encryptedByteArray.Length / key; i++)
+                    {
+                        byteBlock.Add(encryptedByteArray[i * key + keyIndex]);
+                    }
+
+                    for (int possibleKeyChar = 0; possibleKeyChar <= 256; possibleKeyChar++)
+                    {
+                        byte[] xoredByteArray = _hexadecimalUtilities.XorByteArrayByKey(byteBlock.ToArray(), (byte)possibleKeyChar);
+
+                        if (!xoredByteArray.Any(c => (c < 32 || c > 128) && c != '\r' && c != '\n'))
+                        {
+                            score = _stringUtilities.ScoreStringByLetter(Encoding.UTF8.GetString(xoredByteArray)) / xoredByteArray.Length;
+
+                            if (score > highestScore)
+                            {
+                                highestScore = score;
+                                highestScoreKey = possibleKeyChar;
+                            }
+                        }
+                    }
+
+                    if (highestScore > 0)
+                    {
+                        possibleKey[keyIndex] = (byte)highestScoreKey;
+                    }
+                }
+
+                if (possibleKey.All(k => k != 0))
+                {
+                    return Encoding.UTF8.GetString(possibleKey);
+                }
+            }
+
+            return String.Empty;
         }
     }
 }

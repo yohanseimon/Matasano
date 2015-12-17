@@ -7,7 +7,7 @@ namespace Matasano.Library.Tests
     [TestClass]
     public class Set1Tests
     {
-        [TestMethod]
+        [TestMethod, TestCategory("Set 1")]
         public void Challenge01()
         {
             Set1 set = new Set1();
@@ -17,7 +17,7 @@ namespace Matasano.Library.Tests
             Assert.AreEqual("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t", base64String, false);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Set 1")]
         public void Challenge02()
         {
             Set1 set = new Set1();
@@ -27,7 +27,7 @@ namespace Matasano.Library.Tests
             Assert.AreEqual("746865206b696420646f6e277420706c6179", fixedXorString, false);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Set 1")]
         public void Challenge03()
         {
             Set1 set = new Set1();
@@ -37,7 +37,7 @@ namespace Matasano.Library.Tests
             Assert.AreEqual("Cooking MC's like a pound of bacon", xorCipherString, false);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Set 1")]
         public void Challenge04()
         {
             Set1 set = new Set1();
@@ -47,7 +47,7 @@ namespace Matasano.Library.Tests
             Assert.AreEqual("Now that the party is jumping\n", xorCipherString, false);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Set 1")]
         public void Challenge05()
         {
             Set1 set = new Set1();
@@ -55,6 +55,16 @@ namespace Matasano.Library.Tests
             string encryptedString = set.RepeatingKeyXor("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal", "ICE");
 
             Assert.AreEqual("0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f", encryptedString, false);
+        }
+
+        [TestMethod, TestCategory("Set 1")]
+        public void Challenge06()
+        {
+            Set1 set = new Set1();
+
+            string decryptedString = set.BreakRepeatingKeyXor(File.ReadAllText("06.txt"));
+
+            Assert.AreEqual("Terminator X: Bring the noise", decryptedString);
         }
     }
 }
