@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Matasano.Utilities;
@@ -9,11 +8,13 @@ namespace Matasano.Library
 {
     public class Set1
     {
+        EcbUtilities _ecbUtilities;
         StringUtilities _stringUtilities;
         HexadecimalUtilities _hexadecimalUtilities;
 
         public Set1()
         {
+            _ecbUtilities = new EcbUtilities();
             _stringUtilities = new StringUtilities();
             _hexadecimalUtilities = new HexadecimalUtilities();
         }
@@ -204,7 +205,7 @@ namespace Matasano.Library
             }
 
             foreach (int key in hammingDistanceDictionary.OrderBy(h => h.Value).Select(h => h.Key))
-            {                
+            {
                 int highestScoreKey;
                 double score, highestScore;
 
@@ -252,6 +253,24 @@ namespace Matasano.Library
             }
 
             return String.Empty;
+        }
+
+        /*
+         * AES in ECB mode
+         * The Base64-encoded content in this file has been encrypted via AES-128 in ECB mode under the key "YELLOW SUBMARINE".
+         * (case-sensitive, without the quotes; exactly 16 characters; I like "YELLOW SUBMARINE" because it's exactly 16 bytes long, and now you do too).
+         * 
+         * Decrypt it. You know the key, after all.
+         * 
+         * Easiest way: use OpenSSL::Cipher and give it AES-128-ECB as the cipher.
+         * 
+         * Do this with code.
+         * You can obviously decrypt this using the OpenSSL command-line tool, but we're having you get ECB working in code for a reason. You'll need it a lot later on, and not just for attacking ECB.
+         * 
+         */
+        public string DecryptAesInEcbMode(string stringToDecrypt)
+        {
+            return _ecbUtilities.Decrypt(stringToDecrypt, "YELLOW SUBMARINE");
         }
     }
 }

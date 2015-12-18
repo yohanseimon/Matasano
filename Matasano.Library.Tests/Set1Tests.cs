@@ -66,5 +66,17 @@ namespace Matasano.Library.Tests
 
             Assert.AreEqual("Terminator X: Bring the noise", decryptedString);
         }
+
+        [TestMethod, TestCategory("Set 1")]
+        public void Challenge07()
+        {
+            Set1 set = new Set1();
+
+            string decryptedString = set.DecryptAesInEcbMode(File.ReadAllText("07.txt"));
+
+            Assert.IsTrue(decryptedString.StartsWith("I'm back and I'm ringin' the bell"));
+        }
+
+
     }
 }

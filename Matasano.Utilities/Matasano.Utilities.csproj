@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EcbUtilities.cs" />
     <Compile Include="StringUtilities.cs" />
     <Compile Include="HexadecimalUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
