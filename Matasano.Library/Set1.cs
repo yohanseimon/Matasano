@@ -272,5 +272,43 @@ namespace Matasano.Library
         {
             return _ecbUtilities.Decrypt(stringToDecrypt, "YELLOW SUBMARINE");
         }
+
+        /*
+         * Detect AES in ECB mode
+         * In this file are a bunch of hex-encoded ciphertexts.
+         * 
+         * One of them has been encrypted with ECB.
+         * 
+         * Detect it.
+         * 
+         * Remember that the problem with ECB is that it is stateless and deterministic; the same 16 byte plaintext block will always produce the same 16 byte ciphertext.
+         * 
+         */
+        public string DetectAesInEcbMode(string[] decryptedLines)
+        {
+            string hexadecimalString;
+            byte[] byteArray, byteArrayBlock;
+
+            HashSet<string> hexadecimalStringHashSet = new HashSet<string>();
+
+            foreach (string decryptedLine in decryptedLines)
+            {
+                hexadecimalStringHashSet.Clear();
+                byteArray = _hexadecimalUtilities.HexadecimalStringToByteArray(decryptedLine);
+
+                for (int i = 0; i < byteArray.Length / 16; i++)
+                {
+                    byteArrayBlock = byteArray.Skip(i * 16).Take(16).ToArray();
+                    hexadecimalString = _hexadecimalUtilities.ByteArrayToHexadecimalString(byteArrayBlock);
+
+                    hexadecimalStringHashSet.Add(hexadecimalString);
+                }
+
+                if (hexadecimalStringHashSet.Count != byteArray.Length / 16)
+                    return decryptedLine;
+            }
+
+            return String.Empty;
+        }
     }
 }
