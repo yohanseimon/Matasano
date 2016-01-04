@@ -18,6 +18,11 @@ namespace Matasano.Utilities
             return resultByteArray.ToArray();
         }
 
+        public string ByteToHexadecimalString(byte b)
+        {
+            return b.ToString("x2");
+        }
+
         public string ByteArrayToHexadecimalString(byte[] byteArray)
         {
             StringBuilder stringBuilder = new StringBuilder(byteArray.Length);

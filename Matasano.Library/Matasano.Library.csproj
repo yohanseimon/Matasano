@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Set1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Set2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Matasano.Utilities\Matasano.Utilities.csproj">
